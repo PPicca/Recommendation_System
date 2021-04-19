@@ -15,6 +15,7 @@ def minimum_cost(k):
         values.append(cost)
     min_cost = min(values)
     min_seed = values.index(min_cost)
+
     M, P = common.init(X, k, seed=min_seed)
     mixture, post, cost = kmeans.run(X, M, P)
     print("The minimum cost of K =", k, "is", cost)

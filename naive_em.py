@@ -4,7 +4,6 @@ import numpy as np
 from common import GaussianMixture
 
 
-
 def estep(X: np.ndarray, mixture: GaussianMixture) -> Tuple[np.ndarray, float]:
     """E-step: Softly assigns each datapoint to a gaussian component
 
@@ -17,8 +16,23 @@ def estep(X: np.ndarray, mixture: GaussianMixture) -> Tuple[np.ndarray, float]:
             for all components for all examples
         float: log-likelihood of the assignment
     """
-    raise NotImplementedError
+    n, d = X.shape
+    K, _ = mixture.mu.shape
+    post = np.zeros((n, K))
+    L = np.zeros((n,))
 
+    def normal(x, mu, var):
+        return 1 / ((2 * var * np.pi) ** (d / 2)) * np.exp(-1 / (2 * var) * ((x - mu) ** 2).sum(axis=1))
+
+    for i in range(n):
+        tiled_x = np.tile(X[i, :], (K, 1))
+        N = mixture.p * normal(tiled_x, mixture.mu, mixture.var)
+        for k in range(K):
+            post[i, k] = N[k] / np.sum(N)
+            L[i,] = np.sum(N)
+
+    ll = np.sum(np.log(L))
+    return post, ll
 
 def mstep(X: np.ndarray, post: np.ndarray) -> GaussianMixture:
     """M-step: Updates the gaussian mixture by maximizing the log-likelihood
