@@ -47,15 +47,17 @@ def maximum_likelihood(k):
     mixture, post, ll = naive_em.run(X, M, P)
     print("The highest likelihood of K =", k, "is", ll)
     common.plot(X, mixture, post, title=f'K = {k}')
+    return mixture, ll, k
 
 # ONE Cluster (K=1)
-maximum_likelihood(1)
-
+mx, li, k = maximum_likelihood(1)
+print(f"The BIC value for k = {k} is {common.bic(X, mx, li)}")
 # TWO Clusters (K=2)
-maximum_likelihood(2)
-
+mx, li, k = maximum_likelihood(2)
+print(f"The BIC value for k = {k} is {common.bic(X, mx, li)}")
 # THREE Clusters (K=3)
-maximum_likelihood(3)
-
+mx, li, k = maximum_likelihood(3)
+print(f"The BIC value for k = {k} is {common.bic(X, mx, li)}")
 # FOUR Clusters (K=4)
-maximum_likelihood(4)
+mx, li, k = maximum_likelihood(4)
+print(f"The BIC value for k = {k} is {common.bic(X, mx, li)}")
