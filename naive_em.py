@@ -34,6 +34,8 @@ def estep(X: np.ndarray, mixture: GaussianMixture) -> Tuple[np.ndarray, float]:
     ll = np.sum(np.log(L))
     return post, ll
 
+
+
 def mstep(X: np.ndarray, post: np.ndarray) -> GaussianMixture:
     """M-step: Updates the gaussian mixture by maximizing the log-likelihood
     of the weighted dataset
@@ -58,11 +60,12 @@ def mstep(X: np.ndarray, post: np.ndarray) -> GaussianMixture:
 
     for j in range(K):
         mu[j, :] = post[:, j] @ X / n_hat[j]
-        sse = ((mu[j] - X)**2).sum(axis=1) @ post[:, j]
+        sse = ((mu[j] - X) ** 2).sum(axis=1) @ post[:, j]
         cost += sse
         var[j] = sse / (d * n_hat[j])
 
     return GaussianMixture(mu, var, p)
+
 
 def run(X: np.ndarray, mixture: GaussianMixture,
         post: np.ndarray) -> Tuple[GaussianMixture, np.ndarray, float]:

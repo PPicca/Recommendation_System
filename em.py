@@ -55,7 +55,14 @@ def run(X: np.ndarray, mixture: GaussianMixture,
             for all components for all examples
         float: log-likelihood of the current assignment
     """
-    raise NotImplementedError
+    old_ll = None
+    new_ll = None
+    while (old_ll is None or (new_ll - old_ll) >= (1e-6 * abs(new_ll))):
+        old_ll = new_ll
+        post, new_ll = estep(X, mixture)
+        mixture = mstep(X, post)
+
+    return mixture, post, new_ll
 
 
 def fill_matrix(X: np.ndarray, mixture: GaussianMixture) -> np.ndarray:
