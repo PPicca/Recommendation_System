@@ -18,7 +18,33 @@ def estep(X: np.ndarray, mixture: GaussianMixture) -> Tuple[np.ndarray, float]:
         float: log-likelihood of the assignment
 
     """
-    raise NotImplementedError
+    n, d = X.shape
+    K, _ = mixture.mu.shape
+    post = np.zeros((n, K))
+    mu = np.zeros((n, K))
+
+    for i in range(n):
+        tiled_x = np.tile(X[i, :], (K, 1))
+        mask = tiled_x != 0.0
+        mu += (np.tile(post[i,:],(d,1)).T*tiled_x*mask.astype(int))
+
+    return mu
+
+    # def normal(x, mu, var):
+    #     return 1 / ((2 * var * np.pi) ** (d / 2)) * np.exp(-1 / (2 * var) * ((x - mu) ** 2).sum(axis=1))
+    #
+    # for i in range(n):
+    #     tiled_x = np.tile(X[i, :], (K, 1))
+    #     N = mixture.p * normal(tiled_x, mixture.mu, mixture.var)
+    #     for k in range(K):
+    #         post[i, k] = N[k] / np.sum(N)
+    #         L[i,] = np.sum(N)
+    #
+    # ll = np.sum(np.log(L))
+    # return post, ll
+
+
+
 
 
 
@@ -37,7 +63,11 @@ def mstep(X: np.ndarray, post: np.ndarray, mixture: GaussianMixture,
     Returns:
         GaussianMixture: the new gaussian mixture
     """
-    raise NotImplementedError
+    numerator = np.zeros((n, K))
+    denominator = np.zeros((n, K))
+
+    for i in range(n):
+        break
 
 
 def run(X: np.ndarray, mixture: GaussianMixture,

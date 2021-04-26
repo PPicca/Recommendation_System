@@ -10,3 +10,5 @@ n, d = X.shape
 seed = 0
 
 # TODO: Your code here
+M, P = common.init(X, K, seed)
+em.estep(X, M)
