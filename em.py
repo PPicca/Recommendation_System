@@ -18,34 +18,28 @@ def estep(X: np.ndarray, mixture: GaussianMixture) -> Tuple[np.ndarray, float]:
         float: log-likelihood of the assignment
 
     """
-    n, d = X.shape
+    n, _ = X.shape
     K, _ = mixture.mu.shape
     post = np.zeros((n, K))
-    mu = np.zeros((n, K))
 
+    def log_normal(x, mu, var):
+        d = len(x)
+        log_prob = -d / 2.0 * np.log(2 * np.pi * var)
+        log_prob -= 0.5 * ((x - mu) ** 2).sum() / var
+        return log_prob
+
+    ll = 0
     for i in range(n):
-        tiled_x = np.tile(X[i, :], (K, 1))
-        mask = tiled_x != 0.0
-        mu += (np.tile(post[i,:],(d,1)).T*tiled_x*mask.astype(int))
+        mask = (X[i, :] != 0)
+        for j in range(K):
+            log_likelihood = log_normal(X[i, mask], mixture.mu[j, mask],
+                                          mixture.var[j])
+            post[i, j] = np.log(mixture.p[j] + 1e-16) + log_likelihood
+        total = logsumexp(post[i, :])
+        post[i, :] = post[i, :] - total
+        ll += total
 
-    return mu
-
-    # def normal(x, mu, var):
-    #     return 1 / ((2 * var * np.pi) ** (d / 2)) * np.exp(-1 / (2 * var) * ((x - mu) ** 2).sum(axis=1))
-    #
-    # for i in range(n):
-    #     tiled_x = np.tile(X[i, :], (K, 1))
-    #     N = mixture.p * normal(tiled_x, mixture.mu, mixture.var)
-    #     for k in range(K):
-    #         post[i, k] = N[k] / np.sum(N)
-    #         L[i,] = np.sum(N)
-    #
-    # ll = np.sum(np.log(L))
-    # return post, ll
-
-
-
-
+    return np.exp(post), ll
 
 
 def mstep(X: np.ndarray, post: np.ndarray, mixture: GaussianMixture,
@@ -63,11 +57,7 @@ def mstep(X: np.ndarray, post: np.ndarray, mixture: GaussianMixture,
     Returns:
         GaussianMixture: the new gaussian mixture
     """
-    numerator = np.zeros((n, K))
-    denominator = np.zeros((n, K))
-
-    for i in range(n):
-        break
+    break
 
 
 def run(X: np.ndarray, mixture: GaussianMixture,
@@ -85,14 +75,7 @@ def run(X: np.ndarray, mixture: GaussianMixture,
             for all components for all examples
         float: log-likelihood of the current assignment
     """
-    old_ll = None
-    new_ll = None
-    while (old_ll is None or (new_ll - old_ll) >= (1e-6 * abs(new_ll))):
-        old_ll = new_ll
-        post, new_ll = estep(X, mixture)
-        mixture = mstep(X, post)
-
-    return mixture, post, new_ll
+    break
 
 
 def fill_matrix(X: np.ndarray, mixture: GaussianMixture) -> np.ndarray:
@@ -105,4 +88,4 @@ def fill_matrix(X: np.ndarray, mixture: GaussianMixture) -> np.ndarray:
     Returns
         np.ndarray: a (n, d) array with completed data
     """
-    raise NotImplementedError
+    break

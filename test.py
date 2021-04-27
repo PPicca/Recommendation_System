@@ -11,4 +11,5 @@ seed = 0
 
 # TODO: Your code here
 M, P = common.init(X, K, seed)
-em.estep(X, M)
+mixture, post, ll = em.run(X, M, P)
+print(ll)
