@@ -61,3 +61,32 @@ print(f"The BIC value for k = {k} is {common.bic(X, mx, li)}")
 # FOUR Clusters (K=4)
 mx, li, k = maximum_likelihood(4)
 print(f"The BIC value for k = {k} is {common.bic(X, mx, li)}")
+
+X_incomplete = np.loadtxt("netflix_incomplete.txt")
+X_gold = np.loadtxt('netflix_complete.txt')
+
+def max_likelihood_incomplete_data(k):
+    seed_value = 5
+    values = []
+    for i in range(0, seed_value):
+        M, P = common.init(X_incomplete, k, seed=i)
+        mixture, post, ll = em.run(X_incomplete, M, P)
+        values.append(ll)
+    max_ll = max(values)
+    max_seed = values.index(max_ll)
+
+    M, P = common.init(X_incomplete, k, seed=max_seed)
+    mixture, post, ll = em.run(X_incomplete, M, P)
+    print("The maximum likelihood of K =", k, "is", ll)
+    return mixture, ll, k
+
+# ONE Cluster (K = 1)
+mx, li, k = max_likelihood_incomplete_data(1)
+
+# TWELVE Clusters (K = 12)
+mx, li, k = max_likelihood_incomplete_data(12)
+
+# MATRIX COMPARISON WITH 12 CLUSTERS (PREDICTED VS COMPLETE)
+X_pred = em.fill_matrix(X_incomplete, mx)
+rmse = common.rmse(X_gold, X_pred)
+print(rmse)
