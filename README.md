@@ -1,3 +1,4 @@
 # Recommendation_System
-Test
+
+Collaborative Filtering project using Gaussian Mixture Models
  
