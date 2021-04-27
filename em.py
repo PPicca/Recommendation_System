@@ -57,7 +57,31 @@ def mstep(X: np.ndarray, post: np.ndarray, mixture: GaussianMixture,
     Returns:
         GaussianMixture: the new gaussian mixture
     """
-    break
+    n, d = X.shape
+    _, K = post.shape
+
+    n_hat = post.sum(axis=0)
+    p = n_hat / n
+
+    mu = mixture.mu.copy()
+    var = np.zeros(K)
+
+    for j in range(K):
+        sse, weight = 0, 0
+        for l in range(d):
+            mask = (X[:, l] != 0)
+            n_sum = post[mask, j].sum()
+            if (n_sum >= 1):
+                # Updating mean
+                mu[j, l] = (X[mask, l] @ post[mask, j]) / n_sum
+            # Computing variance
+            sse += ((mu[j, l] - X[mask, l])**2) @ post[mask, j]
+            weight += n_sum
+        var[j] = sse / weight
+        if var[j] < min_variance:
+            var[j] = min_variance
+
+    return GaussianMixture(mu, var, p)
 
 
 def run(X: np.ndarray, mixture: GaussianMixture,
