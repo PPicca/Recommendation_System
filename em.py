@@ -119,4 +119,25 @@ def fill_matrix(X: np.ndarray, mixture: GaussianMixture) -> np.ndarray:
     Returns
         np.ndarray: a (n, d) array with completed data
     """
-    break
+    n, _ = X.shape
+    K, _ = mixture.mu.shape
+    X_pred = X.copy()
+
+    def log_normal(x, mu, var):
+        d = len(x)
+        log_prob = -d / 2.0 * np.log(2 * np.pi * var)
+        log_prob -= 0.5 * ((x - mu) ** 2).sum() / var
+        return log_prob
+
+    for i in range(n):
+        mask = X[i, :] != 0
+        mask0 = X[i, :] == 0
+        post = np.zeros(K)
+        for j in range(K):
+            log_likelihood = log_normal(X[i, mask], mixture.mu[j, mask],
+                                          mixture.var[j])
+            post[j] = np.log(mixture.p[j]) + log_likelihood
+        post = np.exp(post - logsumexp(post))
+        X_pred[i, mask0] = np.dot(post, mixture.mu[:, mask0])
+
+    return X_pred
